@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace lab1phase1v2
 {
-    
+    [Serializable]
     public abstract class Employee
     {
         
@@ -16,19 +16,36 @@ namespace lab1phase1v2
         internal string fullName { get; set; }
         internal string lastName { get; set; }
 
+        internal string departmentName { get; set; }
+        
+        internal string startDate { get; set; }
+
+        internal string benefits { get; set; }
+
+        internal SortedDictionary<string, Course> courses = new SortedDictionary<string, Course>();
+
+        internal bool deleted { get; set; }
+
+
+
         
 
 
         private double empCounter;
         
 
-        public Employee(double Id, double type, string first, string full, string last)
+        public Employee(double Id, double type, string first, string full, string last, string departmentN, string startD, string ben, bool delete)
         {
             empId = Id;
             empType = type;
             firstName = first;
             fullName = full;
             lastName = last;
+            departmentName = departmentN;
+            startDate = startD;
+            benefits = ben;
+           
+            deleted = delete;
             empCounter =+ 1;
         }
         

@@ -30,7 +30,7 @@ namespace lab1phase1v2
             this.Controls.Add(firstNameText);
             firstNameText.BringToFront();
 
-            
+
             Label firstName = new Label();
             firstName.Location = new Point(260, 70);
             this.Controls.Add(firstName);
@@ -57,7 +57,7 @@ namespace lab1phase1v2
             dropDownEmp.Items.Add("Sales");
             dropDownEmp.Items.Add("Contract");
             dropDownEmp.BringToFront();
-            dropDownEmp.SelectedIndexChanged += delegate (object sender1, EventArgs e1) { dropDownEmp_SelectedIndexChanged(sender1, e1, firstNameText, lastNameText, employeeId ); };
+            dropDownEmp.SelectedIndexChanged += delegate (object sender1, EventArgs e1) { dropDownEmp_SelectedIndexChanged(sender1, e1, firstNameText, lastNameText, employeeId); };
             //this.addEmployeeButton.Click += new System.EventHandler(this.AddEmployeeButton_Click);
 
             Label empT = new Label();
@@ -66,13 +66,13 @@ namespace lab1phase1v2
             empT.BringToFront();
             empT.Text = "Employee Type*";
 
-            this.employeeList.SelectedIndexChanged += delegate (object sender1, EventArgs e1) {employeeList_SelectedIndexChanged(sender1, e1, firstNameText, lastNameText, dropDownEmp); }; ;
+            this.employeeList.SelectedIndexChanged += delegate (object sender1, EventArgs e1) { employeeList_SelectedIndexChanged(sender1, e1, firstNameText, lastNameText, dropDownEmp); }; ;
         }
 
         private void dropDownEmp_SelectedIndexChanged(object sender, EventArgs e, TextBox firstName, TextBox lastName, string employeeId)
         {
             mainPanel.Controls.Clear();
-            
+
             ComboBox lb = sender as ComboBox;
             int selected = lb.SelectedIndex;
 
@@ -109,7 +109,7 @@ namespace lab1phase1v2
                 HoursWorkedLabel.BringToFront();
                 HoursWorkedLabel.Text = "Hours Worked*";
 
-                
+
 
                 Button SaveButton = new Button();
                 SaveButton.Location = new Point(175, 275);
@@ -147,7 +147,7 @@ namespace lab1phase1v2
                 mainPanel.Controls.Add(SaveButton);
                 SaveButton.BringToFront();
                 SaveButton.Text = "Save";
-                SaveButton.Click += delegate (object sender1, EventArgs e1) { SaveButton_ClickSalary(sender1, e1, monthlyTextBox,  firstName, lastName, employeeId); };
+                SaveButton.Click += delegate (object sender1, EventArgs e1) { SaveButton_ClickSalary(sender1, e1, monthlyTextBox, firstName, lastName, employeeId); };
 
             }
             else if (selected == 2)
@@ -221,7 +221,7 @@ namespace lab1phase1v2
                 contractWageLabel.BringToFront();
                 contractWageLabel.Text = "Contract Wage*";
 
-             
+
 
                 Button SaveButton = new Button();
                 SaveButton.Location = new Point(175, 275);
@@ -234,15 +234,21 @@ namespace lab1phase1v2
             }
         }
 
-       
-        private void employeeList_SelectedIndexChanged(object sender, EventArgs e, TextBox firstName, TextBox lastName, ComboBox dropdown )
+
+        private void employeeList_SelectedIndexChanged(object sender, EventArgs e, TextBox firstName, TextBox lastName, ComboBox dropdown)
         {
             mainPanel.Controls.Clear();
             ListBox lb = sender as ListBox;
             int selected = lb.SelectedIndex;
+            if (selected == -1)
+            {
+                return;
+            }
+            
             var empId = lb.Items[selected];
             string id = empId.ToString();
-            var employee = BusinessRules.Instance.empData[id];
+
+            var employee = BusinessRules.Instance.empData.ContainsKey(id) ? BusinessRules.Instance.empData[id] : BusinessRules.Instance.empDel[id];
             string employeeId = employee.empId.ToString();
 
 
@@ -291,7 +297,7 @@ namespace lab1phase1v2
                 mainPanel.Controls.Add(SaveButton);
                 SaveButton.BringToFront();
 
-                
+
 
                 SaveButton.Text = "Save";
                 SaveButton.Click += delegate (object sender1, EventArgs e1) { SaveButton_ClickHourly(sender1, e1, HoursWorkedText, hourlyRateText, firstName, lastName, employeeId); };
@@ -325,7 +331,7 @@ namespace lab1phase1v2
 
                 firstName.Text = sEmployee.firstName;
                 lastName.Text = sEmployee.lastName;
-                
+
 
                 Button SaveButton = new Button();
                 SaveButton.Location = new Point(175, 275);
@@ -384,10 +390,10 @@ namespace lab1phase1v2
                 mainPanel.Controls.Add(commissionTextBox);
                 commissionTextBox.BringToFront();
                 commissionTextBox.Text = saleEmployee.commission.ToString();
-                
+
                 firstName.Text = saleEmployee.firstName;
                 lastName.Text = saleEmployee.lastName;
-                
+
 
                 Button SaveButton = new Button();
                 SaveButton.Location = new Point(175, 275);
@@ -424,7 +430,7 @@ namespace lab1phase1v2
                 firstName.Text = cEmployee.firstName;
                 lastName.Text = cEmployee.lastName;
 
-                
+
 
 
                 Button SaveButton = new Button();
@@ -433,7 +439,7 @@ namespace lab1phase1v2
                 SaveButton.BringToFront();
                 SaveButton.Text = "Save";
                 SaveButton.Click += delegate (object sender1, EventArgs e1) { SaveButton_ClickContract(sender1, e1, contractWageText, firstName, lastName, employeeId); };
-                
+
             }
         }
         private void SaveButton_ClickHourly(object sender, EventArgs e, TextBox hoursW, TextBox hourlyW, TextBox firstName, TextBox lastName, string empId)
@@ -443,8 +449,8 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
-                    if(Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
+
+                    if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
                     }
@@ -498,7 +504,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -518,19 +524,20 @@ namespace lab1phase1v2
                     hoursW.BackColor = Color.White;
                     hourlyW.BackColor = Color.White;
 
-                    HourlyEmployee employee = new HourlyEmployee(eId, emplTy, firstName.Text, fullName, lastName.Text, hourlyRate, hoursWorked);
+                    HourlyEmployee employee = new HourlyEmployee(eId, emplTy, firstName.Text, fullName, lastName.Text, "", "", "", false, hourlyRate, hoursWorked);
                     employeeList.Items.Add(employee.empId);
 
                     BusinessRules.Instance.AddEmployee(empId, employee);
 
-                }catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     if (ex.Message == "Input string was not in a correct format.")
                     {
 
                         hoursW.BackColor = Color.Red;
                         hourlyW.BackColor = Color.Red;
-                        
+
                         firstName.BackColor = Color.White;
                         lastName.BackColor = Color.White;
                         MessageBox.Show("Hourly Rate, and Hours worked should only contain numbers ");
@@ -557,7 +564,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -581,7 +588,8 @@ namespace lab1phase1v2
 
                     BusinessRules.Instance.UpdateEmployee(eId, emplTy, firstName.Text, fullName, lastName.Text, salary, com, sales);
                     MessageBox.Show(firstName.Text + " has been updated!");
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     if (e.Message == "Input string was not in a correct format.")
                     {
@@ -612,7 +620,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -634,12 +642,13 @@ namespace lab1phase1v2
                     firstName.BackColor = Color.White;
                     lastName.BackColor = Color.White;
 
-                    Sales employee = new Sales(eId, emplTy, firstName.Text, fullName, lastName.Text, salary, com, sales);
+                    Sales employee = new Sales(eId, emplTy, firstName.Text, fullName, lastName.Text, "", "", "", false, salary, com, sales);
                     employeeList.Items.Add(employee.empId);
 
                     BusinessRules.Instance.AddEmployee(empId, employee);
 
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     if (e.Message == "Input string was not in a correct format.")
                     {
@@ -674,7 +683,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -695,7 +704,8 @@ namespace lab1phase1v2
 
                     BusinessRules.Instance.UpdateEmployee(eId, emplTy, firstName.Text, fullName, lastName.Text, salary);
                     MessageBox.Show(firstName.Text + " has been updated!");
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     if (e.Message == "Input string was not in a correct format.")
                     {
@@ -720,8 +730,8 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
-                    if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$")== false)
+
+                    if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
                     }
@@ -739,11 +749,12 @@ namespace lab1phase1v2
                     lastName.BackColor = Color.White;
                     monthlyTextBox.BackColor = Color.White;
 
-                    Salary employee = new Salary(eId, emplTy, firstName.Text, fullName, lastName.Text, salary);
+                    Salary employee = new Salary(eId, emplTy, firstName.Text, fullName, lastName.Text, "", "", "", false, salary);
                     employeeList.Items.Add(employee.empId);
 
                     BusinessRules.Instance.AddEmployee(empId, employee);
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     if (e.Message == "Input string was not in a correct format.")
                     {
@@ -771,7 +782,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -792,7 +803,8 @@ namespace lab1phase1v2
                     BusinessRules.Instance.UpdateEmployee(eId, emplTy, firstName.Text, fullName, lastName.Text, contractWage);
                     MessageBox.Show(firstName.Text + " has been updated!");
                 }
-                catch(Exception e) {
+                catch (Exception e)
+                {
 
                     if (e.Message == "Input string was not in a correct format.")
                     {
@@ -800,7 +812,7 @@ namespace lab1phase1v2
                         contractWageText.BackColor = Color.Red;
                         firstName.BackColor = Color.White;
                         lastName.BackColor = Color.White;
-                        MessageBox.Show( "Contract Wage should only contain numbers ");
+                        MessageBox.Show("Contract Wage should only contain numbers ");
 
                     }
                     else
@@ -817,7 +829,7 @@ namespace lab1phase1v2
             {
                 try
                 {
-                    
+
                     if (Regex.IsMatch(firstName.Text, @"^[a-zA-Z]+$") == false)
                     {
                         throw new Exception("First name should only contain letters");
@@ -836,16 +848,16 @@ namespace lab1phase1v2
                     lastName.BackColor = Color.White;
                     contractWageText.BackColor = Color.White;
 
-                    Contract employee = new Contract(eId, emplTy, firstName.Text, fullName, lastName.Text, contractWage);
+                    Contract employee = new Contract(eId, emplTy, firstName.Text, fullName, lastName.Text, "", "", "", false, contractWage);
                     employeeList.Items.Add(employee.empId);
 
                     BusinessRules.Instance.AddEmployee(empId, employee);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    if(e.Message == "Input string was not in a correct format.")
+                    if (e.Message == "Input string was not in a correct format.")
                     {
-                        
+
                         contractWageText.BackColor = Color.Red;
                         firstName.BackColor = Color.White;
                         lastName.BackColor = Color.White;
@@ -860,10 +872,89 @@ namespace lab1phase1v2
                         MessageBox.Show( /*"Contract should only contain numbers "+ Environment.NewLine + */e.Message);
 
                     }
-                    
+
 
                 }
             }
         }
-    }
+
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+            var emp = BusinessRules.Instance.searchEmployee(searchBox.Text);
+            if (emp == null)
+            {
+                searchBox.Text = "Must be ID, First or Last Name.";
+                searchBox.ForeColor = Color.Red;
+                //not found
+            }
+            else
+            {
+                searchBox.ForeColor = Color.Black;
+                employeeList.SelectedItem = emp.empId;
+            }
+           
+            //searchBox.Text
+        }
+
+        private void OpenFileDB_Click(object sender, EventArgs e)
+        {
+            FileIO.Instance.EmployeeDB = BusinessRules.Instance.empData;
+            FileIO.Instance.OpenFileDB();
+            FileIO.Instance.WriteDB();
+        }
+
+        private void SaveFileDB_Click(object sender, EventArgs e)
+        {
+            FileIO.Instance.EmployeeDB = BusinessRules.Instance.empData;
+            FileIO.Instance.OpenFileDB();
+            FileIO.Instance.ReadDB();
+            FileIO.Instance.SaveFileDB();
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            if(employeeList.SelectedIndex != -1)
+            {
+                DialogResult dr = MessageBox.Show("Are you sure you want to delete employee id:" + employeeList.SelectedItem.ToString(), "Delete Employee", MessageBoxButtons.YesNo);
+                if (dr == DialogResult.Yes)
+                {
+                    var empToDelete = BusinessRules.Instance.empData[employeeList.SelectedItem.ToString()];
+
+                    BusinessRules.Instance.deleteEmp(empToDelete);
+
+
+
+                    employeeList.Items.RemoveAt(employeeList.SelectedIndex);
+                }
+
+            }
+           
+            
+            
+           
+            
+        }
+        //make delete function in business rules so it has 2 sorted dictionaries deleted and not deleted
+        private void showDeleted_Click(object sender, EventArgs e)
+        {
+            employeeList.BackColor = Color.Red;
+            employeeList.Items.Clear();
+            foreach(var item in BusinessRules.Instance.empDel)
+            {
+                employeeList.Items.Add(item.Value.empId.ToString());
+            }
+        }
+
+        private void showEmployees_Click(object sender, EventArgs e)
+        {
+            employeeList.BackColor = Color.White;
+            employeeList.Items.Clear();
+            foreach (var item in BusinessRules.Instance.empData)
+            {
+                employeeList.Items.Add(item.Value.empId.ToString());
+
+            }
+
+        }
+    }   
 }

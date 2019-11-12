@@ -26,9 +26,12 @@ namespace lab1phase1v2
         [STAThread]
         static void Main()
         {
+            //BusinessRules.Instance.searchEmployee("Roman");
+
+            
             
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            
             Application.Run(new Form1());
         }
     }
